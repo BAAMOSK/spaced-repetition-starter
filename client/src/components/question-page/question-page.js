@@ -1,9 +1,9 @@
 import React from 'react';
-// import * as Cookies from 'js-cookie';
 import { connect } from 'react-redux';
-// import AnswerForm from '../answer-form/answer-form';
 import Navbar from '../navbar/Navbar';
-import { fetchQuestion, fetchQuestionIndex, makeGuess, incrementScore } from '../../actions';
+import { fetchQuestion, fillUpQueue, makeGuess, incrementScore, incrementQuestion } from '../../actions';
+import './question-page.css';
+import Modal from '../modal/modal';
 
 export class QuestionPage extends React.Component {
   constructor (props) {
@@ -18,91 +18,59 @@ export class QuestionPage extends React.Component {
     this.props.dispatch(fetchQuestion());
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log('NEXTPROPS', nextProps);
-      if (nextProps.questions.length) {
-        nextProps.questions.forEach((question, index) => {
-          this.state.queue.push(index, question);
-        });
-        // console.log('IN WILLRECEIVEPROPS', this.state.queue);
-        return this.state.queue;
-      }
+  componentWillReceiveProps (nextProps) {
+    // let answer = 'Correct!';
+    if (!nextProps.questions.length) {
+      this.props.queueA.forEach(item => {
+        this.props.questions.push(item);
+      });
+      return this.props.questions;
     }
+  }
 
-    submitGuess (e) {
-      e.preventDefault();
-      let status = 'Submit';
-      const questionsQueue = [];
-      for (let i=0; i < this.props.questions.length; i++) {
-        questionsQueue.push(this.props.questions[i]);
-      }
-      const correctQueue = [];
-      const value = this.input.value;
-      // this.form.reset();
-      this.props.dispatch(makeGuess(value));
-      this.input.value = '';
-      this.props.dispatch(fetchQuestionIndex());
-      const question = this.props.questions[this.props.questionIndex];
-      console.log('APPSTATE QINDEX', this.props.questionIndex);
-      console.log('VALUE', value);
-      console.log('QUESTION.ANSWER', question.answer);
-      this.setState({index:this.state.index + 1});
-      console.log('INDEX', this.state.index);
+  submitGuess (e) {
+    e.preventDefault();
+    const correctQueue = [];
+    const value = this.input.value;
+    this.props.dispatch(makeGuess(value));
+    this.input.value = '';
 
-      if (this.props.questions.length === this.props.questionIndex) {
+    let question = this.props.questions[0];
 
-      }
-      if (value === question.answer) {
-        //increment score
-        this.props.dispatch(incrementScore());
-        //dequeue
-        const currentQuestion = questionsQueue.shift();
-        console.log('**********', questionsQueue);
-        console.log('__________', correctQueue);
-        correctQueue.push(currentQuestion);
-        // this.props.dispatch(dequeue());
-        //requeue
-        // this.props.dispatch(requeue());
-
-        alert('Correct!');
-      } else {
-        //dequeue
-        //enqueue same question
-        const currentQuestion = questionsQueue.shift();
-        questionsQueue.push(currentQuestion);
-        alert('Sorry, try again later!');
-      }
-      status = 'Next';
-      console.log('APPSTATE QUESTIONS', this.props.questions)
+    this.setState({ index: this.state.index + 1 });
+    if (this.props.questions.length === 0) {
+      this.props.dispatch(fillUpQueue(correctQueue));
     }
-//STARTING WITH QUESTIONS QUEUE WHICH IS COPY OF QUESTIONS ARRAY IN APPSTATE
-//IF IT'S RIGHT, WE MOVE QUESTION TO CORRECTQUEUE
-//IF IT'S WRONG, WE MOVE QUESTION TO BACK OF QUESTIONSQUEUE
-//WHEN WE GO THROUGH LENGTH OF QUESTIONS ARRAY IN APPSTATE, THEN WE START QUESTIONSQUEUE
-//WHEN QUESTIONSQUEUE IS DONE, WE GO TO CORRECTQUEUE
+    if (value.toLowerCase() === question.answer.toLowerCase()) {
+      this.props.dispatch(incrementScore());
+      this.props.dispatch(incrementQuestion());
+      const correctlyAnswered = this.props.questions.shift();
+      correctQueue.push(correctlyAnswered);
+      this.props.queueA.push(correctlyAnswered);
+      // alert('Correct!');
+    } else {
+      this.message = 'Sorry, try again later!';
+      this.props.dispatch(incrementQuestion());
+      const wrongQuestion = this.props.questions.shift();
+      this.props.questions.push(wrongQuestion);
+      // alert('Sorry, try again later!');
+    }
+  }
   render () {
-    const questions = this.props.questions.map((val, index) => {
-
-      // return this.props.dispatch(fillUpQueue(val.question));
+    let questions = this.props.questions.map((val, index) => {
       return (<li key={index}>{val.question}</li>);
     });
-    let status = 'Submit';
-    console.log('THIS IS THE STATE QUEUE', this.state.queue);
+    let message = 'Correct!';
     return (
-          <div>
-        {/*<button onClick={this.bind.populateQuestions(this)} />*/}
-            <Navbar />
-            <ul className="question-list">
-              {/*<li>{this.props.questions[0].question}</li>*/}
-              {questions[this.state.index]}
-          {/* {this.props.questions[fetchQuestionIndex()].question} */}
-          {/* {this.state.queue[this.props.questionIndex].question} */}
-            </ul>
+          <div className={'center col-md-12'}>
+            <Navbar className={'col-md-12'}/>
+            <h1 className={'question'}>{questions[0]}</h1>
             <form onSubmit={e => this.submitGuess(e)}>
-              <input type="text" name="userGuess" id="userGuess" autoComplete="off"
-                  className="text" placeholder="The meaning is..." required
-                  ref={input => this.input = input} />
-              <button type="submit" >{status}</button>
+              <div className={'row'}><input type="text" name="userGuess" id="userGuess" autoComplete="off"
+                  className={'text col-md-offset-2 col-md-8'} placeholder="The meaning is..." required
+                  ref={input => this.input = input} /></div>
+              <Modal className={'col-md-4'} status={message} answer={'answer'}/>
+              {/*<button type="submit" >{status}</button>*/}
             </form>
           </div>
     );
@@ -115,7 +83,8 @@ const mapStateToProps = (state) => ({
   score: state.score,
   queueA: state.queueA,
   queueB: state.queueB,
-  questionIndex: state.questionIndex
+  questionIndex: state.questionIndex,
+  questionCount: state.questionCount
 });
 
 export default connect(mapStateToProps)(QuestionPage);

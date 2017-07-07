@@ -7,9 +7,10 @@ import {
   CREATE_USER,
   MAKE_GUESS,
   INCREMENT_SCORE,
-  DEQUEUE,
-  REQUEUE,
-  ENQUEUE,
+  INCREMENT_QUESTION,
+  // DEQUEUE,
+  // REQUEUE,
+  // ENQUEUE,
   FILL_UP_QUEUE
 } from '../actions';
 // import Queue from './algorithm';
@@ -84,6 +85,11 @@ const reducer = (state = initialState, action) => {
       ...state,
       score: state.score + 1
     };
+  case INCREMENT_QUESTION:
+    return {
+      ...state,
+      questionCount: state.questionCount + 1
+    };
   case FETCH_QUESTION_INDEX:
     return {
       ...state,
@@ -104,11 +110,12 @@ const reducer = (state = initialState, action) => {
   //     ...state,
   //     queueA: Queue.queueA.enqueue(state.questions[state.questionIndex])
   //   };
-  // case FILL_UP_QUEUE:
-  //   return {
-  //     ...state,
-  //     queueA: Queue.queueA.enqueue()
-  //   };
+  case FILL_UP_QUEUE:
+    return [
+      ...state, {
+        questions: action.array
+      }
+    ];
   default:
     return state;
   }

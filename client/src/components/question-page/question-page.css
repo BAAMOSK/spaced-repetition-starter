@@ -1,0 +1,24 @@
+h1 {
+  padding: 35px;
+}
+
+.inline {
+  display: inline;
+}
+
+.center {
+
+  margin-top: 20px;
+  margin-left: 13.5%;
+  text-align: center;
+}
+
+li {
+  list-style: none;
+  font-size: 2em;
+}
+
+.text {
+  font-size: 2em;
+}
+
