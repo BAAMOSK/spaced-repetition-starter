@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { score, questionNumber } from '../../actions';
+// import { score, questionNumber } from '../../actions';
 
 export class Navbar extends Component {
 
@@ -8,6 +8,12 @@ export class Navbar extends Component {
 
   render () {
     // const score = props.score;
+    let points = '';
+    if (this.props.score === 1) {
+      points = 'pt';
+    } else if (this.props.score > 1) {
+      points = 'pts';
+    }
     return (
       <nav className={'navbar navbar-inverse'} >
         <div className={'container'}>
@@ -15,10 +21,10 @@ export class Navbar extends Component {
         </div>
         <form className={'navbar-form navbar-left'}>
           <div className={'form-group'}>
-            <h3><span className={'label label-primary'}>Question #{this.props.questionNumber}</span></h3>
+            <h3><span className={'label label-primary'}>Question # {this.props.questionCount}</span></h3>
           </div>
           <div className={'form-group'}>
-            <h3><span className={'label label-success'}>Score: {this.props.score}</span></h3>
+            <h3><span className={'label label-success'}>Score: {this.props.score} {points}</span></h3>
           </div>
         </form>
         <form className={'navbar-form navbar-right'}>
@@ -33,7 +39,7 @@ export class Navbar extends Component {
 
 const mapStateToProps = (state) => ({
   score: state.score,
-  questionNumber: state.questionNumber
+  questionCount: state.questionCount
 });
 
 export default connect(mapStateToProps)(Navbar);

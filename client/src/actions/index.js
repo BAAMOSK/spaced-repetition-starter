@@ -36,6 +36,10 @@ export const INCREMENT_SCORE = 'INCREMENT_SCORE';
 export const incrementScore = () => ({
   type: INCREMENT_SCORE });
 
+export const INCREMENT_QUESTION = 'INCREMENT_QUESTION';
+export const incrementQuestion = () => ({
+  type: INCREMENT_QUESTION });
+
 export const ENQUEUE = 'ENQUEUE';
 export const enqueue = () => ({
   type: ENQUEUE });

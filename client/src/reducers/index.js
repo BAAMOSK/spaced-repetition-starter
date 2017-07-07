@@ -7,6 +7,7 @@ import {
   CREATE_USER,
   MAKE_GUESS,
   INCREMENT_SCORE,
+  INCREMENT_QUESTION,
   DEQUEUE,
   REQUEUE,
   ENQUEUE,
@@ -83,6 +84,11 @@ const reducer = (state = initialState, action) => {
     return {
       ...state,
       score: state.score + 1
+    };
+  case INCREMENT_QUESTION:
+    return {
+      ...state,
+      questionCount: state.questionCount + 1
     };
   case FETCH_QUESTION_INDEX:
     return {
