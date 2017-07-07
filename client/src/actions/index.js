@@ -53,8 +53,10 @@ export const requeue = () => ({
   type: REQUEUE });
 
 export const FILL_UP_QUEUE = 'FILL_UP_QUEUE';
-export const fillUpQueue = () => ({
-  type: FILL_UP_QUEUE });
+export const fillUpQueue = (array) => ({
+  type: FILL_UP_QUEUE,
+  array
+});
 
 export const score = () => dispatch => {
   dispatch(fetchScore);
